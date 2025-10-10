@@ -211,91 +211,6 @@ def drop_nan_years(df, make_endofhour = False):
     # Return the modified DataFrame without the 'time2' and 'year' columns
     return df_copy.iloc[:,:-2].dropna(how='all',ignore_index = True)
 
-# root = '/home/ssda/sencom_hourly/'
-
-
-# batch_size = 1440
-# totalnumfiles=os.listdir(crowd_stations_root)
-# os.makedirs(new_crowd_stations_root, exist_ok=True)
-# for idx, station in enumerate(os.listdir(crowd_stations_root)):
-#     print(f'{idx}/{len(totalnumfiles)}: now at station {station}')
-#     station_path, json_path, csv_path = create_paths(station,crowd_stations_root)
-#     metadata = load_json_file(json_path)
-#     if metadata['has_data'] == 'False':
-#         continue
-#     # try:
-#     #     df = pd.read_csv(csv_path).iloc[-52596:,:]
-#     #     print('loading only 52596')
-#     # except:
-#     #     df = pd.read_csv(csv_path)
-#     #     print('loading all')
-    
-#     df = pd.read_csv(csv_path)
-    
-
-#     metadata_streams = list(df.columns[1:])
-#     if metadata_streams != []:
-#         df_final = pd.DataFrame()
-
-#         for i in range(0, len(df), batch_size):
-#             df_final = pd.concat([df_final,run_dbscan_on_df(df.iloc[i:i+batch_size,:],metadata_streams,dbs_radius=1)])
-            
-
-        
-#         dum_dict= {}
-#         for key in metadata['available_streams']:
-#             # print(key)
-#             if key in metadata_streams:
-
-#                 dum_dict[key] = metadata['available_streams'][key]
-#             else:
-#                 continue
-#         metadata['available_streams'] = dum_dict
-
-
-#         dum_dict= {}
-#         for key in metadata['sensor']:
-#             # print(key)
-#             if key in metadata_streams:
-
-#                 dum_dict[key] = metadata['sensor'][key]
-#             else:
-#                 continue
-#         metadata['sensor'] = dum_dict
-
-#         dum_dict= {}
-#         for key in metadata['stream_units']:
-#             # print(key)
-#             if key in metadata_streams:
-
-#                 dum_dict[key] = metadata['stream_units'][key]
-#             else:
-#                 continue
-
-
-#         metadata['stream_units'] = dum_dict
-
-#     else:
-#         continue
-    
-#     if len(df_final) < 10:
-#         print('less than 10 - skipping station ', station)
-#         continue
-    
-#     df_final = drop_nan_years(df_final)
-    
-
-#     if df_final.isnull().values.all() == True:
-#         continue
-#     # break
-#     os.makedirs(os.path.join(new_crowd_stations_root,station), exist_ok=True)
-#     metadata['type'] = 'crowd_pre'
-#     write_json_file(os.path.join(new_crowd_stations_root,station,f'{station}.json'),metadata)
-#     write_csv_file(os.path.join(new_crowd_stations_root,station,f'{station}.csv'), df_final)
-#     del df, df_final, metadata
-    
-
-
 
 print('Starting Sencom')
 
@@ -648,100 +563,6 @@ RANGES = {
 }
 
 
-# make_endofhour = True
-# YEAR_HOURS = 8760
-# def drop_nan_years(df, make_endofhour = False):
-#     # Create a copy of the original DataFrame
-#     df_copy = df.copy()
-
-#     # Convert the 'time' column to datetime and extract the year
-#     df_copy['time2'] = pd.to_datetime(df_copy['time'], unit='s')
-
-#     if make_endofhour:
-#         df_copy['time2'] = df_copy['time2'] + pd.Timedelta(hours=1)
-#         df_copy['time'] = df_copy['time2'].astype('int64') // 10**9  # back to epoch seconds
-
-
-#     df_copy['year'] = df_copy['time2'].dt.year
-
-#     # Calculate the percentage of non-NA values for each column in each year
-#     percent_non_na = df_copy.groupby('year').apply(lambda x: x.count() / YEAR_HOURS, include_groups=False)
-
-#     # Find the columns where any year has less than 65% non-NA values
-#     columns_to_replace = percent_non_na.columns[percent_non_na.lt(0.65).any()]
-
-#     # For these columns, replace the values for the years where it has less than 65% non-NA values with NA
-#     for column in columns_to_replace:
-#         years_to_replace = percent_non_na.index[percent_non_na[column] < 0.65]
-#         df_copy.loc[df_copy['year'].isin(years_to_replace), column] = np.nan
-
-#     # Return the modified DataFrame without the 'time2' and 'year' columns
-#     return df_copy.iloc[:,:-2].dropna(how='all',ignore_index = True)
-
-
-
-# print('Starting Lucht official csvs')
-# batch_size = 1440
-
-# # new_root = '/home/yahia/dummy_stations_test/'
-# os.makedirs(new_luchtmeetnet_csvs_root, exist_ok=True)
-# for idx, station in enumerate(os.listdir(luchtmeetnet_csvs_root)):
-#     if idx%100 ==0:
-#         print(f'{idx}/{len(os.listdir(luchtmeetnet_csvs_root))} Creating metadata and processing. ')
-#     station_path = os.path.join(luchtmeetnet_csvs_root,station)
-#     csv_path = os.path.join(station_path,f'{station}.csv')
-#     json_path = os.path.join(station_path,f'{station}.json')
-#     metadata = load_json_file(json_path)
-#     # try:
-#     #     df = pd.read_csv(csv_path).iloc[-52596:,:]
-#     #     print('loading only 52596')
-#     # except:
-#     #     df = pd.read_csv(csv_path)
-#     #     print('loading all')
-    
-#     df = pd.read_csv(csv_path)
-#     metadata_streams = [stream for stream in metadata['available_streams']]
-#     if metadata_streams != []:
-#         df_final = pd.DataFrame()
-
-#         for i in range(0, len(df), batch_size):
-#             df_final = pd.concat([df_final,run_dbscan_on_df(df.iloc[i:i+batch_size,:],metadata_streams,dbs_radius=1)])
-
-
-#         dum_dict= {}
-#         for key in metadata['sensor']:
-#             # print(key)
-#             if key in metadata['available_streams']:
-
-#                 dum_dict[key] = metadata['sensor'][key]
-#             else:
-#                 continue
-#         metadata['sensor'] = dum_dict
-
-#         dum_dict= {}
-#         for key in metadata['stream_units']:
-#             # print(key)
-#             if key in metadata['available_streams']:
-
-#                 dum_dict[key] = metadata['stream_units'][key]
-#             else:
-#                 continue
-
-#         metadata['stream_units'] = dum_dict
-
-#     else:
-#         continue
-
-#     df_final = drop_nan_years(df_final, make_endofhour = make_endofhour)
-#     if df_final.empty == True:
-#         continue
-        
-#     os.makedirs(os.path.join(new_luchtmeetnet_csvs_root,f'{station}_PRE'), exist_ok=True)
-#     metadata['type'] = 'official_val_pre'
-#     write_json_file(os.path.join(new_luchtmeetnet_csvs_root,f'{station}_PRE',f'{station}_PRE.json'),metadata)
-#     write_csv_file(os.path.join(new_luchtmeetnet_csvs_root,f'{station}_PRE',f'{station}_PRE.csv'), df_final)
-#     del df, df_final, metadata
-
 DOWNLOAD_LUCHTMEETNETCSVS = False
 make_endofhour = False
 YEAR_HOURS = 8760
@@ -1020,7 +841,6 @@ for station_folder in os.listdir(separated_dir):
 
 print('DBSCAN')
 batch_size = 1440
-# new_root = '/home/yahia/dummy_stations_test/'
 os.makedirs(luchtmeetnet_csv_dbscan, exist_ok=True)
 for idx, station in enumerate(os.listdir(final_official_station)):
     if idx%100 ==0:
@@ -1400,8 +1220,6 @@ STATIONS_WITHIN_GRIDS = load_json_file(STATIONS_WITHIN_GRIDS_PATH)
 implemented_cities = ['rotterdam', 'utrecht', 'amsterdam', 'groningen', 'hague', 'ijmuiden', 'nijmegen']
 premade_datasets_path = TEST_SET_PATH
 lcs_bulk_store = LCS_BULK_PATH
-# premade_filtered_datasets_path = '/home/yahia/final_dataset/pre_prepared datasets_filtered'
-
 
 grid_coords = FULL_GRIDS['Netherlands']
 dum_index =[]

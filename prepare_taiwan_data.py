@@ -138,6 +138,7 @@ gov_data_list = [
 
 git_root = REPO_ROOT
 raw_root = RAW_ROOT
+# use this if u want to redownload the LASS data again
 # if DOWNLOAD_DATA:
 #     print('Downloading data from GitHub.')
 #     repo_urls = [
@@ -639,18 +640,6 @@ def final_process():
 
         # --- 1) Load CSV (epoch seconds) and convert to datetime in Taiwan tz
         df = pd.read_csv(csv_path)
-        # df['time'] = pd.to_datetime(df['time'], unit='s', utc=True).dt.tz_convert(TIMEZONE)
-        # df = df.set_index('time')
-
-        # # --- 2) Hourly resample (mean) and fill gaps with 'NA'
-        # hourly = df.resample('H').mean()
-        # hourly['pm25'] = hourly['pm25'].where(~hourly['pm25'].isna(), 'NA')
-
-        # # --- 3) Prepare for DBSCAN: reset index and reconvert time back to epoch UTC
-        # hourly = hourly.reset_index()
-        # hourly['time'] = hourly['time'].dt.tz_convert('UTC').astype('int64') // 10**9
-        # df_hourly = hourly[['time', 'pm25']]
-
         # --- 4) Batch‐wise DBSCAN preprocessing
         df_final = pd.DataFrame()
         for i in range(0, len(df), BATCH_SIZE):
@@ -706,7 +695,6 @@ STATIONS_WITHIN_GRIDS = load_json_file(f'{OG_ROOT}/metadata/stations_within_grid
 
 
 lcs_bulk_store = f'{OG_ROOT}/final_dataset/ood_data_bulk' #lcs stations 
-# lcs_bulk_store = '/home/yahia/ood_data_path2/final_dataset/ood_data_bulk'
 grid_coords = FULL_GRIDS['Taiwan']
 dum_index =[]
 cols_lim=10
