@@ -31,7 +31,10 @@ Luchtmeetnet API is the one available to pull for the public. The verified versi
 
 We also provide a large chunk of the raw data provided through the following link:
 
-[Download the dataset from figshare](https://figshare.com/s/3d76b6c57ed6913bb8fe)
+# Download
+[Download the dataset from figshare](https://uvaauas.figshare.com/articles/dataset/AQ-SDR_Dataset/30177886?file=58130851)
+
+---
 
 At the end of this readme file, you will see a description of the dataset tools and some explanation. Note that you do not need to add anything to the scripts in the folders `data_requests_scripts` and `preprocessing_scripts`, they are made available for you and you are welcome to explore them :)!
 
