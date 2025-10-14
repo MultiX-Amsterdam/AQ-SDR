@@ -71,7 +71,16 @@ final_dir_ood
     └── prepared_ood_datasets
 
 ```
+For every data source, aside from the final thing used to train/test Veli, the folder is goin to contain data of the following shape:
 
+```
+source_name
+└── sensor_name_id
+    ├── sensor_name_id.csv
+    └── sensor_name_id.json
+
+```
+The `csv` file contains the actual data with time column as epoch time. The metadata is all stored in the `JSON` file.
 
 # Environment Setup
 
