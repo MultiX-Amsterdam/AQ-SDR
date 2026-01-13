@@ -6,6 +6,9 @@ Define the root:
 '''
 ROOT = '/dum/dum/dum'
 
+starting_time = 1970 #this is where epoch time start, you can change it
+end_time = 2025
+
 import os
 import glob
 
@@ -129,7 +132,7 @@ def process_knmi_data(data_string,year=None):
         raise ValueError("Could not find station number in the data")
     
     # Find the data start point using the header line
-    data_start = next(i for i, line in enumerate(lines) if line.startswith('# STN,YYYYMMDD,   HH'))
+    data_start = next((i for i, line in enumerate(lines) if line.startswith('# STN,YYYYMMDD')), None)
     data_lines = lines[data_start+1:]
     
     # Prepare output directory
@@ -190,9 +193,8 @@ def process_knmi_data(data_string,year=None):
 
 
 stations_list = [209, 210, 215, 225, 235, 240, 242, 248, 249, 251, 257, 258, 260, 265, 267, 269, 270, 273, 275, 277, 278, 279, 280, 283, 285, 286, 290, 308, 310, 311, 312, 313, 315, 316, 319, 323, 324, 330, 331, 340, 343, 344, 348, 350, 356, 370, 375, 377, 380, 391]
-starting_time = 1970 #this is where epoch time start, you can change it
-end_time = 2025
-ROOT = f'{ROOT}/KNMI/'
+
+
 for stns in stations_list:
     for i in range((end_time-starting_time)):
         
@@ -202,10 +204,14 @@ for stns in stations_list:
         data = fetch_knmi_hourly_data(stns, ymdh_start, ymdh_end)
 
         lines = data.strip().split('\n')
-        if lines[next(i for i, line in enumerate(lines) if line.startswith('# STN,YYYYMMDD,   HH'))+1:] == []:
-            continue
+        header_index = next((i for i, line in enumerate(lines) if line.startswith('# STN,YYYYMMDD')), None)
+
+# 2. Check if header was found AND if there is actual data after it
+        if header_index is None or lines[header_index+1:] == []:
+            # Skip if no header found or if the list is empty after the header
+            pass # or continue if this is inside a loop
         else:
-            output_dir = process_knmi_data(data,year = starting_time+i)
+            output_dir = process_knmi_data(data, year=starting_time+i)
     
     concat_csvs(output_dir)
 

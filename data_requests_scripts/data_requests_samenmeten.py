@@ -7,6 +7,8 @@ define the root:
 
 root = '/dum/dum/crowd_stations_root'
 
+last_checkpoint = 0 #in case it crashes
+total_stations = 11528
 
 import requests
 import os
@@ -78,8 +80,6 @@ def get_page(req):
     return data, nextlink
 
 
-last_checkpoint = 3955
-total_stations = 9286
 for iot_id in range(last_checkpoint,total_stations+1):
     things_url = f'https://api-samenmeten.rivm.nl/v1.0/Things({iot_id})'
     things_req = get_req(session,things_url)

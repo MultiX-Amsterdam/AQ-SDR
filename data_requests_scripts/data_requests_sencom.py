@@ -365,7 +365,8 @@ def aggregate_to_hourly(df_path, final_path, return_df = False):
 large_files=[]
 inputs_path = '/home/ssda/sencom2'
 final_path = '/home/ssda/sencom_hourly'
-done_files = os.listdir('/home/ssda/sencom_hourly/')
+os.makedirs(final_path,exist_ok=True)
+done_files = os.listdir(final_path)
 
 for filename in os.listdir(inputs_path):
 

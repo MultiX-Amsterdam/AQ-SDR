@@ -278,7 +278,7 @@ for station in station_names:
         'year_start': station_req.json()['data']['year_start'],
         'municipality': station_req.json()['data']['municipality'],
         'locality_type': station_req.json()['data']['type'],
-        'datastreams_links': f'https://api2020.luchtmeetnet.nl/open_api/stations/{station['number']}'
+        'datastreams_links': f'https://api2020.luchtmeetnet.nl/open_api/stations/{station["number"]}'
 }
         components = station_req.json()['data']['components']
         json_data['stream_units']={}
