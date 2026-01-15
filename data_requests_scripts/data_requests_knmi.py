@@ -4,10 +4,10 @@ Not updated - feel free to use it but don't rely on it being 100% up to date.
 
 Define the root:
 '''
-ROOT = '/dum/dum/dum'
+ROOT = '/home/ssda/new_data/KNMI/'
 
 starting_time = 1970 #this is where epoch time start, you can change it
-end_time = 2025
+end_time = 2026
 
 import os
 import glob

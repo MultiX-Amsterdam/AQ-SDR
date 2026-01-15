@@ -16,6 +16,8 @@ from dateutil import parser
 
 import zipfile
 
+specify_years = ["2024", "2025"] #specify the years you want. otherwise 
+
 '''
 
 Not updated - feel free to use it but don't rely on it being 100% up to date.
@@ -54,7 +56,7 @@ def unzip_and_remove(zip_path):
 headers={}
 
 timeout = 60
-target_directory='/home/ssda/sencom/'
+target_directory='/home/ssda/new_data/sencom/'
 
 root_link = 'http://archive.sensor.community/csv_per_month/'
 response = requests.get(root_link, headers = headers, timeout = timeout)
@@ -71,9 +73,9 @@ for link in links:
     
     all_links.extend([os.path.join(dir_link, nest_link.get('href', '')) for nest_link in soup.find_all('a')][5:])
 
-with open('./utils/sencom_links.txt', 'w') as f:
-    for line in all_links:
-        f.write(f"{line}\n")
+# with open('./utils/sencom_links.txt', 'w') as f:
+#     for line in all_links:
+#         f.write(f"{line}\n")
 '''
 EXTREMELY IMPORTANT:
 
@@ -82,6 +84,8 @@ THE DATASET IS VERY LARGE, MORE THAN 1 TB, BE AWARE.
 
 failed = []
 for link in all_links:
+    if not any(year in link for year in specify_years) and specify_years:
+        continue
     final_dir = os.path.join(target_directory,link.split('csv_per_month/')[1])
 
     try:
@@ -187,7 +191,7 @@ def process_csv_files(input_dir, output_dir, eu_geojson):
     
     # Load country boundaries with 1000m buffer
     country_boundaries = load_country_boundaries(eu_geojson)
-    done_files = os.listdir('/home/ssda/sencom2')
+    done_files = os.listdir('/home/ssda/new_data/sencom2')
     # Iterate through all files in the input directory
     for root, _, files in os.walk(input_dir):
         print('now in directory: ' ,root)
@@ -254,8 +258,8 @@ def process_csv_files(input_dir, output_dir, eu_geojson):
                     print(f"Error processing {filename}: {e}")
 
 
-input_directory = "/home/ssda/sencom"
-output_directory = "/home/ssda/sencom2"
+input_directory = "/home/ssda/new_data/sencom"
+output_directory = "/home/ssda/new_data/sencom2"
 
 process_csv_files(input_directory, output_directory, EU_GEOJSON)
 
@@ -363,8 +367,8 @@ def aggregate_to_hourly(df_path, final_path, return_df = False):
     
 
 large_files=[]
-inputs_path = '/home/ssda/sencom2'
-final_path = '/home/ssda/sencom_hourly'
+inputs_path = '/home/ssda/new_data/sencom2'
+final_path = '/home/ssda/new_data/sencom_hourly'
 os.makedirs(final_path,exist_ok=True)
 done_files = os.listdir(final_path)
 
@@ -393,8 +397,8 @@ for filename in os.listdir(inputs_path):
 Phase 3 - Split based on id 
 '''
 
-root = '/home/ssda/sencom_hourly/'
-new_path = '/home/ssda/sencom_id/'
+root = '/home/ssda/new_data/sencom_hourly/'
+new_path = '/home/ssda/new_data/sencom_id/'
 for filename in os.listdir(root):
         # Check if the file is a CSV
     if filename.endswith('.csv'):
@@ -429,8 +433,8 @@ Phase 4 - create directories based on sensor ids and names
 '''
 
 
-root = '/home/ssda/sencom_id/'
-new_root = '/home/ssda/sencom_root'
+root = '/home/ssda/new_data/sencom_id/'
+new_root = '/home/ssda/new_data/sencom_root'
 
 sensor_file_counters = {}
 
@@ -519,8 +523,8 @@ def write_json_file(file_path, data):
         json.dump(data, json_file, indent=4)
 
 # Input and output directories
-input_root = '/home/ssda/sencom_root'
-output_root = '/home/ssda/sencom_final_root'
+input_root = '/home/ssda/new_data/sencom_root'
+output_root = '/home/ssda/new_data/sencom_final_root'
 
 # Ensure the output root directory exists
 os.makedirs(output_root, exist_ok=True)
@@ -588,7 +592,7 @@ for sensor_id in os.listdir(input_root):
         print(f"Combined CSV created: {output_path}")
 
 
-root = '/home/ssda/sencom_final_root/'
+root = '/home/ssda/new_data/sencom_final_root/'
 
 for station in os.listdir(root):
     print(f'now in station: {station}')
@@ -666,7 +670,7 @@ purely for documentation purposes
 
 # def main():
 #     # Get the root directory
-#     root_dir = '/home/ssda/sencom_final_root'
+#     root_dir = '/home/ssda/new_data/sencom_final_root'
     
 #     # Find all CSV files that match the folder name pattern
 #     csv_files = []
@@ -723,7 +727,7 @@ purely for documentation purposes
 
 # def main():
 #     # Get the root directory
-#     root_dir = '/home/ssda/sencom_final_root'
+#     root_dir = '/home/ssda/new_data/sencom_final_root'
     
 #     # Find all CSV files that match the folder name pattern
 #     csv_files = []

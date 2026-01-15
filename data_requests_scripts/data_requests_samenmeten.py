@@ -5,10 +5,15 @@ define the root:
 '''
 
 
-root = '/dum/dum/crowd_stations_root'
+root = '/home/ssda/new_data/crowd_stations_root'
 
-last_checkpoint = 0 #in case it crashes
+last_checkpoint = 769 #in case it crashes
 total_stations = 11528
+MAX_PULLS = 18000
+
+
+LIMIT_TWO_YEARS = True #make false if you want to pull as much data as you want. otherwise it will pull roughly only the past 2 years.
+
 
 import requests
 import os
@@ -71,7 +76,11 @@ def dump_csv(csv_data, path):
 def get_page(req):
     try:
         nextlink = req.json()['@iot.nextLink']
-        print(nextlink)
+        if int(nextlink.split('skip=')[1]) > MAX_PULLS and LIMIT_TWO_YEARS:
+            nextlink = None
+            print('Reached max pulls for 2 years limit')
+        else:
+            print(nextlink)
     except:
         nextlink = None
     data = []
