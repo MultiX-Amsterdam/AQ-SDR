@@ -80,43 +80,51 @@ for link in links:
 EXTREMELY IMPORTANT:
 
 THE DATASET IS VERY LARGE, MORE THAN 1 TB, BE AWARE.
+the following code  is to download the data. uncomment if you want to download it.
 '''
 
-failed = []
-for link in all_links:
-    if not any(year in link for year in specify_years) and specify_years:
-        continue
-    final_dir = os.path.join(target_directory,link.split('csv_per_month/')[1])
+### START OF DOWNLOADING
 
-    try:
-        response = requests.get(link, headers = headers, timeout = timeout)
-    except:
-        failed.append(link)
-        print(f'failed at: {link}')
-        continue
-    os.makedirs(os.path.join(target_directory,link.split('csv_per_month/')[1].split('/')[0]), exist_ok=True)
+# failed = []
+# for link in all_links:
+#     if not any(year in link for year in specify_years) and specify_years:
+#         continue
+#     final_dir = os.path.join(target_directory,link.split('csv_per_month/')[1])
+
+#     try:
+#         response = requests.get(link, headers = headers, timeout = timeout)
+#     except:
+#         failed.append(link)
+#         print(f'failed at: {link}')
+#         continue
+#     os.makedirs(os.path.join(target_directory,link.split('csv_per_month/')[1].split('/')[0]), exist_ok=True)
     
-    with open(final_dir, 'wb') as file:
-        for chunk in response.iter_content(chunk_size=8192):
-            file.write(chunk)
-    unzip_and_remove(final_dir)
-    # print(final_dir)
+#     with open(final_dir, 'wb') as file:
+#         for chunk in response.iter_content(chunk_size=8192):
+#             file.write(chunk)
+#     unzip_and_remove(final_dir)
+#     # print(final_dir)
     
-while(failed != []):
-    link = failed[0]
-    final_dir = os.path.join(target_directory,link.split('csv_per_month/')[1])
-    try:
-        response = requests.get(link, headers = headers, timeout = timeout)
-        os.makedirs(os.path.join(target_directory,link.split('csv_per_month/')[1].split('/')[0]), exist_ok=True)
-        
-        with open(final_dir, 'wb') as file:
-            for chunk in response.iter_content(chunk_size=8192):
-                file.write(chunk)
-        unzip_and_remove(final_dir)
-        # print(final_dir)
-        failed.remove(failed[0])
-    except:
-        continue
+# while(failed != []):
+#     link = failed[0]
+#     final_dir = os.path.join(target_directory,link.split('csv_per_month/')[1])
+#     try:
+#         response = requests.get(link, headers = headers, timeout = timeout)
+#         os.makedirs(os.path.join(target_directory,link.split('csv_per_month/')[1].split('/')[0]), exist_ok=True)
+
+####
+#         with open(final_dir, 'wb') as file:
+#             for chunk in response.iter_content(chunk_size=8192):
+#                 file.write(chunk)
+#         unzip_and_remove(final_dir)
+#         # print(final_dir)
+#         failed.remove(failed[0])
+#     except:
+#         continue
+
+
+######## END OF DOWNLOADINg
+
 '''
 The followin gcode is to process it - a single csv file could be up to 11gb alone so it is goign to be extremely slow
 the processing includes removing data poin that are outside of NL, BL, and DE. You can edit this below in the' EU_GEOJSON' portion of the code to keep the EU countries that you are seeking.
@@ -131,7 +139,7 @@ Phase 1 - Split based on region (choice here is Netherlands, Germany, and Belgiu
 '''
 
 # Load the GeoJSON file (ensure this path is correct)
-with open('./utils/europe.geojson', 'r') as f:
+with open('../utils/europe.geojson', 'r') as f:
     EU_GEOJSON = json.load(f)
 EU_GEOJSON['features'] = [
     feature for feature in EU_GEOJSON['features'] 
@@ -205,7 +213,7 @@ def process_csv_files(input_dir, output_dir, eu_geojson):
                 output_file_path = os.path.join(output_dir, filename)
                 
                 # Process the file
-                try:
+                try:    
                     # Read CSV in chunks to manage memory
                     chunk_size = 5000000  # Adjust based on your system's memory
                     chunks_filtered = []
@@ -503,7 +511,7 @@ Phase 5 - final splitting and creation of json metadata
 '''
 
 
-gdf = gpd.read_file('./utils/NLBLGER_JSON.geojson')
+gdf = gpd.read_file('../utils/NLBLGER_JSON.geojson')
 def locate_country(gdf, longitude, latitude):
 
     point = Point(longitude, latitude)
@@ -695,58 +703,58 @@ purely for documentation purposes
 #     main()
 
 
-# import pandas as pd
-# import os
-# from pathlib import Path
-# import multiprocessing as mp
-# from datetime import datetime
-# import pytz
+import pandas as pd
+import os
+from pathlib import Path
+import multiprocessing as mp
+from datetime import datetime
+import pytz
 
-# def convert_to_epoch(filepath):
-#     """Convert 'time' column from UTC datetime to epoch time for a single CSV file."""
-#     try:
-#         # Read the CSV file
-#         df = pd.read_csv(filepath)
+def convert_to_epoch(filepath):
+    """Convert 'time' column from UTC datetime to epoch time for a single CSV file."""
+    try:
+        # Read the CSV file
+        df = pd.read_csv(filepath)
         
-#         if 'time' not in df.columns:
-#             print(f"Warning: 'time' column not found in {filepath}")
-#             return False
+        if 'time' not in df.columns:
+            print(f"Warning: 'time' column not found in {filepath}")
+            return False
         
-#         # Convert time string to datetime and then to epoch
-#         df['time'] = pd.to_datetime(df['time'])
-#         df['time'] = df['time'].apply(lambda x: int(x.timestamp()))
+        # Convert time string to datetime and then to epoch
+        df['time'] = pd.to_datetime(df['time'])
+        df['time'] = df['time'].apply(lambda x: int(x.timestamp()))
         
-#         # Save back to the same file
-#         df.to_csv(filepath, index=False)
-#         # print(f"Successfully processed {filepath}")
-#         return True
+        # Save back to the same file
+        df.to_csv(filepath, index=False)
+        # print(f"Successfully processed {filepath}")
+        return True
         
-#     except Exception as e:
-#         print(f"Error processing {filepath}: {str(e)}")
-#         return False
+    except Exception as e:
+        print(f"Error processing {filepath}: {str(e)}")
+        return False
 
-# def main():
-#     # Get the root directory
-#     root_dir = '/home/ssda/new_data/sencom_final_root'
+def main():
+    # Get the root directory
+    root_dir = '/home/ssda/new_data/sencom_final_root'
     
-#     # Find all CSV files that match the folder name pattern
-#     csv_files = []
-#     for folder in os.listdir(root_dir):
-#         folder_path = Path(root_dir) / folder
-#         if folder_path.is_dir():
-#             csv_file = folder_path / f"{folder}.csv"
-#             if csv_file.exists():
-#                 csv_files.append(str(csv_file))
+    # Find all CSV files that match the folder name pattern
+    csv_files = []
+    for folder in os.listdir(root_dir):
+        folder_path = Path(root_dir) / folder
+        if folder_path.is_dir():
+            csv_file = folder_path / f"{folder}.csv"
+            if csv_file.exists():
+                csv_files.append(str(csv_file))
     
-#     # Use multiprocessing to process files in parallel
-#     with mp.Pool(processes=mp.cpu_count()) as pool:
-#         results = pool.map(convert_to_epoch, csv_files)
+    # Use multiprocessing to process files in parallel
+    with mp.Pool(processes=mp.cpu_count()) as pool:
+        results = pool.map(convert_to_epoch, csv_files)
     
-#     # Print summary
-#     successful = sum(results)
-#     total = len(csv_files)
-#     print(f"\nProcessing complete!")
-#     print(f"Successfully processed {successful} out of {total} files")
+    # Print summary
+    successful = sum(results)
+    total = len(csv_files)
+    print(f"\nProcessing complete!")
+    print(f"Successfully processed {successful} out of {total} files")
 
 # if __name__ == "__main__":
 #     main()
