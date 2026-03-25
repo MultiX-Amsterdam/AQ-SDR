@@ -674,7 +674,8 @@ def process_file(filepath):
 
         # Rename the column
         df = df.rename(columns={'timestamp': 'time'})
-
+        cols = ['time'] + [c for c in df.columns if c != 'time']
+        df = df[cols]
         # Save back to the same file
         df.to_csv(filepath, index=False)
         print(f"Successfully processed {filepath}")

@@ -18,8 +18,6 @@ from shapely.geometry import Point
 
 
 from utils.geoutils import *
-from preprocessing_scripts import metadata_creation 
-from preprocessing_scripts import create_lcs_only
 
 
 
@@ -37,7 +35,7 @@ def set_seed(seed):
     np.random.seed(seed)
     print(f'Seed set to: {seed}')
 
-LAST_UPDATE = 2025
+LAST_UPDATE = 2026
 DOWNLOAD_LUCHTMEETNETCSVS = True
 
 parser = argparse.ArgumentParser(description="Process directory and config arguments.")
@@ -56,27 +54,27 @@ print("DUMMY_HOLDER:", DUMMY_HOLDER)
 print("eu_data:", eu_data)
 
 
-required_subdirs = [
-    "luchtmeetnet_csvs",
-]
+# required_subdirs = [
+#     "luchtmeetnet_csvs",
+# ]
 
 # Check eu_data
 if not os.path.isdir(eu_data):
     sys.stderr.write(f"Error: eu_data does not exist or is not a directory: {eu_data}\n")
     sys.exit(1)
 
-# Check required subdirectories
-missing = []
-for subdir in required_subdirs:
-    path = os.path.join(eu_data, subdir)
-    if not os.path.isdir(path):
-        missing.append(subdir)
+# # Check required subdirectories
+# missing = []
+# for subdir in required_subdirs:
+#     path = os.path.join(eu_data, subdir)
+#     if not os.path.isdir(path):
+#         missing.append(subdir)
 
-if missing:
-    sys.stderr.write("Error: You cannot start without eu_data having required data. Make sure the naming is identical as well. eu_data is missing required subdirectories:\n")
-    for m in missing:
-        sys.stderr.write(f"  - {m}\n")
-    sys.exit(1)
+# if missing:
+#     sys.stderr.write("Error: You cannot start without eu_data having required data. Make sure the naming is identical as well. eu_data is missing required subdirectories:\n")
+#     for m in missing:
+#         sys.stderr.write(f"  - {m}\n")
+#     sys.exit(1)
 
 
 
@@ -120,8 +118,6 @@ variable_mapping = {
 
 
 val_id = 'VAL_PRE'
-metadata_creation.ROOT = f'{FINAL_DIR}/data'
-create_lcs_only.ROOT = f'{FINAL_DIR}/data'
 FULL_METADATA_PATH = f'{FINAL_DIR}/metadata/full_metadata.json'
 FULL_GRIDS_PATH = f'{FINAL_DIR}/metadata/grids/gridded_5km.json'
 STATIONS_WITHIN_GRIDS_PATH = f'{FINAL_DIR}/metadata/stations_within_grids/stations_within_grids_5000.json'
