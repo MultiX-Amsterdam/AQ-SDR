@@ -5,13 +5,13 @@ Also, please do cite our paper using:
 
 ```
 @misc{Yahia2025Veli,
-      title={Veli: Unsupervised Method and Unified Benchmark for Low-Cost Air Quality Sensor Correction}, 
+      title={Veli: Unsupervised Method and Unified Benchmark for Low-Cost Air Quality Sensor Correction},
       author={Yahia Dalbah and Marcel Worring and Yen-Chia Hsu},
       year={2025},
       eprint={2508.02724},
       archivePrefix={arXiv},
       primaryClass={eess.SP},
-      url={https://arxiv.org/abs/2508.02724}, 
+      url={https://arxiv.org/abs/2508.02724},
 }
 ```
 
@@ -130,9 +130,9 @@ pip install -r requirements.txt
 ```
 ## Preprocessing
 
-To abide by the licensing provided by each data source, we provide the raw data through the figshare link posted above. 
+To abide by the licensing provided by each data source, we provide the raw data through the figshare link posted above.
 
-Due to the licesning, we cannot publish the processed data. 
+Due to the licesning, we cannot publish the processed data.
 These scripts do:
 - Reorganize the data
 - Resample the data hourly
@@ -159,8 +159,8 @@ These are sample arguments for the python scripts:
 
 
 ```bash
-python -u prepare_all_data.py  --eu_data "/path/to/eu_data"  --final_dir "/path/to/final/data" --dummy_holder "/path/to/dummy_holder" 
-  
+python -u prepare_all_data.py  --eu_data "/path/to/eu_data"  --final_dir "/path/to/final/data" --dummy_holder "/path/to/dummy_holder"
+
 ```
 The path to eu_data should contain the following directories:
 
@@ -178,7 +178,7 @@ This will automatically delete the 'dummy_holder' directory after you are done s
 
 ### Taiwan data
 ```bash
-python -u prepare_taiwan_data.py --operation_root "/path/to/taiwan_raw_downloaded/" --final_root "/path/to/final_dir_ood" 
+python -u prepare_taiwan_data.py --operation_root "/path/to/taiwan_raw_downloaded/" --final_root "/path/to/final_dir_ood"
 ```
 The path to taiwan data should contain the following directories:
 
@@ -214,7 +214,7 @@ Fixed format of json keys, check if they are there, whatever is missing replace 
 
 Pull whatever is present.
 If the data is not hourly, downsample it by the hour (average)
-If all components are empty for this hour, the whole time slot is dropped 
+If all components are empty for this hour, the whole time slot is dropped
 If at least one component is present, keep it and add ‘NaN’ to the rest.
 
 **2- Preprocessing**
@@ -251,12 +251,12 @@ The result is 100 files (locations, files are labeled by name) for NL, each has 
 **4- Testing**
 
 - The ‘infer_to_dataframe’ function generates predictions as dataframe. The predictions are generated for every sensor, INCLUDING the NA one. However, these reading are ‘invalid’, so the binary mask is an indicator to discard them. You are welcome to fiddle with them and do analysis on them :)
-- The errors are calculated ONLY for the non-NAN values in both the reference and LCS arrays (i.e. only when there are available readings for both). 
+- The errors are calculated ONLY for the non-NAN values in both the reference and LCS arrays (i.e. only when there are available readings for both).
 - This is an experimental thing, but we also have a fill_hour_rows argument that tells the model to bring back the hours that were dropped because all sensors are NA. This will generate predictions based on its location in time from zero information. Again, we do not claim that this works, but you are welcome to experiment with this.
 
 
 Ranges of feasibility:
-``` 
+```
 RANGES = {
     'PM10':(-50,1000),
     'PM2.5':(-50,1000),
@@ -265,7 +265,7 @@ RANGES = {
     'ZWR': (0,400),
     'PM10':(-50,1000),
     'pres': (900,1300),
-    'no2': (0,750), 
+    'no2': (0,750),
     'pm10_kal':(-50,1000),
     'BC': (-5,40),
     'pm25':(-50,1000),
@@ -428,6 +428,16 @@ PM2.5 Open Data Portal - LASS (folder name: /out_of_distribution_downloaded/down
 The original license is CC BY-NC-SA 4.0
 
 as documented on their webpage: https://pm25.lass-net.org/
+
+# How to pull new data and push data to the ESDR dashbaord
+
+For pulling new data, use all the scripts in the `data_requests_scripts` folder. There are four scripts, explained below:
+- `data_requests_knmi.py` -- pull the weather data from KNMI
+- `data_requests_luchtmeetnet_api.py` -- this script pull the high-quality sensor data from [Luchtmeetnet](https://www.luchtmeetnet.nl/), but you can ignore this script becasue the Luchtmeetnet API is very slow and hard to use, so we do not use this raw data, and instead, we use the data from the [verified Luchtmeetnet dataset](https://data.rivm.nl/data/luchtmeetnet/)
+- `data_requests_samenmeten.py` -- pull the air quality sensor data (mostly low-cost citizen science sensors in the Netherlands) from [Samen Meten](https://www.samenmeten.nl/) data portal
+- `data_requests_sencom.py` -- pull the air quality sensor data (mostly low-cost citizen science sensors in EU regions) from [Sensor.Community](http://sensor.community/)
+
+Additonally, we need to also manually download data from the [verified Luchtmeetnet dataset](https://data.rivm.nl/data/luchtmeetnet/) and run the `prepare_luchtmeetnet_csvs_only.py` script.
 
 # Acknowledgement
 
