@@ -25,6 +25,8 @@ import zipfile
 
 specify_years = ["2024", "2025"] #specify the years you want. otherwise
 
+ROOT = f'/home/ssda/new_data'
+
 '''
 
 Not updated - feel free to use it but don't rely on it being 100% up to date.
@@ -63,7 +65,7 @@ def unzip_and_remove(zip_path):
 headers={}
 
 timeout = 60
-target_directory='/home/ssda/new_data/sencom/'
+target_directory=f'{ROOT}/sencom/'
 
 root_link = 'http://archive.sensor.community/csv_per_month/'
 response = requests.get(root_link, headers = headers, timeout = timeout)
@@ -205,7 +207,7 @@ def process_csv_files(input_dir, output_dir, eu_geojson):
 
     # Load country boundaries with 1000m buffer
     country_boundaries = load_country_boundaries(eu_geojson)
-    done_files = os.listdir('/home/ssda/new_data/sencom2')
+    done_files = os.listdir(f'{ROOT}/sencom2')
     # Iterate through all files in the input directory
     for root, _, files in os.walk(input_dir):
         print('now in directory: ' ,root)
@@ -381,8 +383,8 @@ def aggregate_to_hourly(df_path, final_path, return_df = False):
 
 
 large_files=[]
-inputs_path = '/home/ssda/new_data/sencom2'
-final_path = '/home/ssda/new_data/sencom_hourly'
+inputs_path = f'{ROOT}/sencom2'
+final_path = f'{ROOT}/sencom_hourly'
 os.makedirs(final_path,exist_ok=True)
 done_files = os.listdir(final_path)
 
@@ -411,8 +413,8 @@ for filename in os.listdir(inputs_path):
 Phase 3 - Split based on id
 '''
 
-root = '/home/ssda/new_data/sencom_hourly/'
-new_path = '/home/ssda/new_data/sencom_id/'
+root = f'{ROOT}/sencom_hourly/'
+new_path = f'{ROOT}/sencom_id/'
 for filename in os.listdir(root):
         # Check if the file is a CSV
     if filename.endswith('.csv'):
@@ -447,8 +449,8 @@ Phase 4 - create directories based on sensor ids and names
 '''
 
 
-root = '/home/ssda/new_data/sencom_id/'
-new_root = '/home/ssda/new_data/sencom_root'
+root = f'{ROOT}/sencom_id/'
+new_root = f'{ROOT}/sencom_root'
 
 sensor_file_counters = {}
 
@@ -537,8 +539,8 @@ def write_json_file(file_path, data):
         json.dump(data, json_file, indent=4)
 
 # Input and output directories
-input_root = '/home/ssda/new_data/sencom_root'
-output_root = '/home/ssda/new_data/sencom_final_root'
+input_root = f'{ROOT}/sencom_root'
+output_root = f'{ROOT}/sencom_final_root'
 
 # Ensure the output root directory exists
 os.makedirs(output_root, exist_ok=True)
@@ -606,7 +608,7 @@ for sensor_id in os.listdir(input_root):
         print(f"Combined CSV created: {output_path}")
 
 
-root = '/home/ssda/new_data/sencom_final_root/'
+root = f'{ROOT}/sencom_final_root/'
 
 for station in os.listdir(root):
     print(f'now in station: {station}')
@@ -652,61 +654,57 @@ do NOT run this code, it is fxied, but i just added it because i made the mistak
 purely for documentation purposes
 '''
 
-# import pandas as pd
-# import os
-# from pathlib import Path
-# import multiprocessing as mp
-# from functools import partial
+import pandas as pd
+import os
+from pathlib import Path
+import multiprocessing as mp
+from functools import partial
 
-# def process_file(filepath):
-#     """Process a single CSV file to rename the 'timestamp' column to 'time'."""
-#     try:
-#         # Read only the header first to check if 'timestamp' exists
-#         header = pd.read_csv(filepath, nrows=0)
-#         if 'timestamp' not in header.columns:
-#             print(f"Warning: 'timestamp' column not found in {filepath}")
-#             return False
+def process_file(filepath):
+    """Process a single CSV file to rename the 'timestamp' column to 'time'."""
+    try:
+        # Read only the header first to check if 'timestamp' exists
+        header = pd.read_csv(filepath, nrows=0)
+        if 'timestamp' not in header.columns:
+            print(f"Warning: 'timestamp' column not found in {filepath}")
+            return False
 
-#         # Read the CSV file
-#         df = pd.read_csv(filepath)
+        # Read the CSV file
+        df = pd.read_csv(filepath)
 
-#         # Rename the column
-#         df = df.rename(columns={'timestamp': 'time'})
+        # Rename the column
+        df = df.rename(columns={'timestamp': 'time'})
 
-#         # Save back to the same file
-#         df.to_csv(filepath, index=False)
-#         print(f"Successfully processed {filepath}")
-#         return True
+        # Save back to the same file
+        df.to_csv(filepath, index=False)
+        print(f"Successfully processed {filepath}")
+        return True
 
-#     except Exception as e:
-#         print(f"Error processing {filepath}: {str(e)}")
-#         return False
+    except Exception as e:
+        print(f"Error processing {filepath}: {str(e)}")
+        return False
 
-# def main():
-#     # Get the root directory
-#     root_dir = '/home/ssda/new_data/sencom_final_root'
+    # Get the root directory
+root_dir = f'{ROOT}/sencom_final_root'
 
-#     # Find all CSV files that match the folder name pattern
-#     csv_files = []
-#     for folder in os.listdir(root_dir):
-#         folder_path = Path(root_dir) / folder
-#         if folder_path.is_dir():
-#             csv_file = folder_path / f"{folder}.csv"
-#             if csv_file.exists():
-#                 csv_files.append(str(csv_file))
+# Find all CSV files that match the folder name pattern
+csv_files = []
+for folder in os.listdir(root_dir):
+    folder_path = Path(root_dir) / folder
+    if folder_path.is_dir():
+        csv_file = folder_path / f"{folder}.csv"
+        if csv_file.exists():
+            csv_files.append(str(csv_file))
 
-#     # Use multiprocessing to process files in parallel
-#     with mp.Pool(processes=mp.cpu_count()) as pool:
-#         results = pool.map(process_file, csv_files)
+# Use multiprocessing to process files in parallel
+with mp.Pool(processes=mp.cpu_count()) as pool:
+    results = pool.map(process_file, csv_files)
 
-#     # Print summary
-#     successful = sum(results)
-#     total = len(csv_files)
-#     print(f"\nProcessing complete!")
-#     print(f"Successfully processed {successful} out of {total} files")
-
-# if __name__ == "__main__":
-#     main()
+# Print summary
+successful = sum(results)
+total = len(csv_files)
+print(f"\nProcessing complete!")
+print(f"Successfully processed {successful} out of {total} files")
 
 
 import pandas as pd
@@ -739,28 +737,27 @@ def convert_to_epoch(filepath):
         print(f"Error processing {filepath}: {str(e)}")
         return False
 
-def main():
-    # Get the root directory
-    root_dir = '/home/ssda/new_data/sencom_final_root'
+# Get the root directory
+root_dir = f'{ROOT}/sencom_final_root'
 
-    # Find all CSV files that match the folder name pattern
-    csv_files = []
-    for folder in os.listdir(root_dir):
-        folder_path = Path(root_dir) / folder
-        if folder_path.is_dir():
-            csv_file = folder_path / f"{folder}.csv"
-            if csv_file.exists():
-                csv_files.append(str(csv_file))
+# Find all CSV files that match the folder name pattern
+csv_files = []
+for folder in os.listdir(root_dir):
+    folder_path = Path(root_dir) / folder
+    if folder_path.is_dir():
+        csv_file = folder_path / f"{folder}.csv"
+        if csv_file.exists():
+            csv_files.append(str(csv_file))
 
-    # Use multiprocessing to process files in parallel
-    with mp.Pool(processes=mp.cpu_count()) as pool:
-        results = pool.map(convert_to_epoch, csv_files)
+# Use multiprocessing to process files in parallel
+with mp.Pool(processes=mp.cpu_count()) as pool:
+    results = pool.map(convert_to_epoch, csv_files)
 
-    # Print summary
-    successful = sum(results)
-    total = len(csv_files)
-    print(f"\nProcessing complete!")
-    print(f"Successfully processed {successful} out of {total} files")
+# Print summary
+successful = sum(results)
+total = len(csv_files)
+print(f"\nProcessing complete!")
+print(f"Successfully processed {successful} out of {total} files")
 
 # if __name__ == "__main__":
 #     main()

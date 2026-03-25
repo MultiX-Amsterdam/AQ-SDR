@@ -38,7 +38,7 @@ def set_seed(seed):
     print(f'Seed set to: {seed}')
 
 LAST_UPDATE = 2025
-DOWNLOAD_LUCHTMEETNETCSVS = False
+DOWNLOAD_LUCHTMEETNETCSVS = True
 
 parser = argparse.ArgumentParser(description="Process directory and config arguments.")
 
