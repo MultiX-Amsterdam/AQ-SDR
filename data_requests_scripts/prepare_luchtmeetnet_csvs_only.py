@@ -217,6 +217,8 @@ YEAR_HOURS = 8760
 os.makedirs(zip_dir, exist_ok=True)
 os.makedirs(extract_dir, exist_ok=True)
 if DOWNLOAD_LUCHTMEETNETCSVS:
+    response = requests.get("https://data.rivm.nl/data/luchtmeetnet/Metadata/luchtmeetnet_meetlocaties.csv")
+    open(LUCHTMEETNET_CSV_METADATA_PATH, "wb").write(response.content)
     # Loop through years
     for year in range(1976, LAST_UPDATE+1):
         
