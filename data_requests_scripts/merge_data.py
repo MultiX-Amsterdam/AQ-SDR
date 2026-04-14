@@ -9,6 +9,12 @@ Merge new station data into the existing data3 directory.
 
 Run this after you have downloaded new data
 
+Usage:
+  python data_requests_scripts/merge_data.py
+
+  - Update SRC and DST paths below if your directories differ.
+  - Consider backing up DST before running, as CSV files in DST will be overwritten in case 3.
+
 
 This script merges air quality station data from a source directory (SRC: /home/ssda/new_data/)
 into a destination directory (DST: /data/env/data3/).
@@ -56,12 +62,6 @@ The script handles three cases:
                                           appended. New columns from SRC are also added
                                           (with NA for existing rows). The merged result
                                           overwrites the DST CSV.
-
-Usage:
-  python data_requests_scripts/merge_data.py
-
-  - Update SRC and DST paths below if your directories differ.
-  - Consider backing up DST before running, as CSV files in DST will be overwritten in case 3.
 
 '''
 
