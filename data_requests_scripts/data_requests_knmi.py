@@ -1,8 +1,9 @@
 '''
 Code to pull data from knmi 'https://www.daggegevens.knmi.nl/klimatologie/uurgegevens'
 Not updated - feel free to use it but don't rely on it being 100% up to date.
-'''
 
+Usage:
+python data_requests_knmi.py'''
 """
 Define the root folder below to pull the data.
 """
