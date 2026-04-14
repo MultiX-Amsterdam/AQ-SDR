@@ -23,9 +23,23 @@ from dateutil import parser
 
 import zipfile
 
-specify_years = ["2024", "2025"] #specify the years you want. otherwise
+"""
+For updating data, do the following:
+- 1. Change the specify_years to a list of years that we want to pull
+- 2. change the ROOT variable above to the directory where you want to save the data
 
+For example, if we want to pull data from year 2024 and 2025, we should use:
+- specify_years = ["2024", "2025"]
+
+Notice that this script, unlike the one for samen meten, creates many subfolders inside the ROOT directory.
+
+Usage:
+python data_requests_sencom.py
+"""
+specify_years = ["2024", "2025"] #specify the years you want. otherwise
 ROOT = f'/home/ssda/new_data'
+
+os.makedirs(f'{ROOT}', exist_ok=True)
 
 '''
 

@@ -433,11 +433,11 @@ as documented on their webpage: https://pm25.lass-net.org/
 
 For pulling new data, use all the scripts in the `data_requests_scripts` folder. There are four scripts, explained below:
 - `data_requests_knmi.py` -- pull the weather data from KNMI
-- `data_requests_luchtmeetnet_api.py` -- this script pull the high-quality sensor data from [Luchtmeetnet](https://www.luchtmeetnet.nl/), but you can ignore this script becasue the Luchtmeetnet API is very slow and hard to use, so we do not use this raw data, and instead, we use the data from the [verified Luchtmeetnet dataset](https://data.rivm.nl/data/luchtmeetnet/)
 - `data_requests_samenmeten.py` -- pull the air quality sensor data (mostly low-cost citizen science sensors in the Netherlands) from [Samen Meten](https://www.samenmeten.nl/) data portal
 - `data_requests_sencom.py` -- pull the air quality sensor data (mostly low-cost citizen science sensors in EU regions) from [Sensor.Community](http://sensor.community/)
+- `prepare_luchtmeetnet_csvs_only.py` -- pull the [verified Luchtmeetnet dataset](https://data.rivm.nl/data/luchtmeetnet/)
 
-Additonally, we need to also manually download data from the [verified Luchtmeetnet dataset](https://data.rivm.nl/data/luchtmeetnet/) and run the `prepare_luchtmeetnet_csvs_only.py` script.
+Then, make sure that all the data in under the same root directory, such as `/home/ssda/new_data`. Also, make sure that all the old data is in another root directory, such as `/home/ssda/old_data`. Finally, run the script `merge_new_data.py` to merge the old data and the new data into the `/home/ssda/old_data` folder. In this way, the original folder data can be continuously updated.
 
 # Acknowledgement
 

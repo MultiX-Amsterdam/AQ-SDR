@@ -1,6 +1,6 @@
 
 import os
-import numpy as np 
+import numpy as np
 import json
 import shutil
 import requests
@@ -28,6 +28,17 @@ import random
 import time
 
 start = time.time()
+
+"""
+This script will automatically download data from the Luchtmeetnet website.
+
+For example, if we want the data up to June 2026, we just change LAST_UPDATE to 2027.
+
+Usage:
+python prepare_luchtmeetnet_csvs_only.py --eu_data /home/ssda/new_data
+
+Notice that this call will override all the data in the specified folder, which is /home/ssda/new_data
+"""
 
 SEED=1999
 def set_seed(seed):
@@ -187,7 +198,7 @@ def drop_nan_years(df, make_endofhour = False):
 
     # Calculate the percentage of non-NA values for each column in each year
     percent_non_na = df_copy.groupby('year').apply(lambda x: x.count() / YEAR_HOURS, include_groups=False)
-    
+
     # Find the columns where any year has less than 65% non-NA values
     columns_to_replace = percent_non_na.columns[percent_non_na.lt(0.65).any()]
 
@@ -221,38 +232,38 @@ if DOWNLOAD_LUCHTMEETNETCSVS:
     open(LUCHTMEETNET_CSV_METADATA_PATH, "wb").write(response.content)
     # Loop through years
     for year in range(1976, LAST_UPDATE+1):
-        
+
         url = f"https://data.rivm.nl/data/luchtmeetnet/Vastgesteld-jaar/{year}/{year}.zip"
         zip_path = os.path.join(zip_dir, f"{year}.zip")
-        
+
         try:
             print(f"Downloading {year}...")
             response = requests.get(url, stream=True)
             response.raise_for_status()
-            
+
             # Save zip file
             with open(zip_path, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            
+
             # Extract contents
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(extract_dir)
-            
+
             print(f"Finished {year}")
         except Exception as e:
             print(f"Failed {year}: {e}")
 else:
 
     for year_zip in os.listdir(zip_dir):
-        
+
         zip_path = os.path.join(zip_dir,year_zip)
-        
-            
+
+
             # Extract contents
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_dir)
-        
+
 
 print('Unzipped files')
 # Make sure output folder exists
@@ -350,7 +361,7 @@ def process_csv(file_path: Path, luchtmeetnet_metadata: pd.DataFrame):
 
         if 'eenheid' in group.columns:
             unit = group['eenheid'].iloc[0]
-            if 'µ' in unit: 
+            if 'µ' in unit:
                 unit = unit.replace('µ','u')
             if 'm³' in unit:
                 unit = unit.replace('³','3')
@@ -481,5 +492,3 @@ for station_folder in os.listdir(separated_dir):
         json.dump(final_json, f, indent=2)
 
 shutil.copytree(final_official_station, FINAL_DIR,dirs_exist_ok=True)
-    
-    
